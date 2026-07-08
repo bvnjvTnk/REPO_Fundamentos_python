@@ -82,7 +82,20 @@ def buscar_precio(precio_min, precio_max, productos, inventario):
             items.append(item)
     return items
 
+def buscar_codigo(codigo, inventario, productos):
+    codigo = codigo.upper().strip()
+    if codigo in productos and codigo in inventario:
+        return True
+    
+    return False
+    
 
+def actualizar_precio(codigo,nuevo_precio,productos):
+    codigo = codigo.upper().strip()
+    if buscar_codigo(productos,codigo):
+        productos[codigo][2] = nuevo_precio
+        return True
+    return False
 
 
 
