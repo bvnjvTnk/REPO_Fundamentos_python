@@ -81,6 +81,37 @@ def buscar_precio(precio_min, precio_max, productos, inventario):
             items.append(item)
     return items
 
+def ejecutar_buscar_precio(productos, inventario):
+    while True:
+        try:
+            precio_min = int(input("Ingresa el precio mínimo: "))
+            precio_max = int(input("Ingresa el precio máximo: "))
+            if precio_min > precio_max:
+                print("El precio mínimo no puede ser mayor al máximo. Intenta de nuevo.")
+                continue
+            break 
+        except ValueError:
+            print("Error: Debes ingresar números enteros.")
+            
+    buscar_precio(precio_min, precio_max, productos, inventario)
+
+def buscar_precio(precio_min, precio_max, productos, inventario):
+    productos_filtrados = []
+    
+    for codigo, datos in productos.items():
+        precio = datos[2]
+        stock = inventario[codigo][0]
+        
+        if precio_min <= precio <= precio_max and stock > 0:
+            productos_filtrados.append((datos[0], codigo))
+            
+    if productos_filtrados:
+        print("Producto encontrado")
+        for nombre, codigo in productos_filtrados:
+            print(f"{nombre}--{codigo}")
+    else:
+        print("No se encontro.")
+
 def buscar_codigo(codigo, productos):
     codigo = codigo.upper().strip()
     if codigo in productos:
@@ -98,39 +129,92 @@ def actualizar_precio(codigo,nuevo_precio,productos):
 
 
 
-def agregar_producto_exe(codigo, nombre, categoria, precio, disponible, stock, vendidos, productos,inventario):
-    codigo = validar_codigo("Ingresa el codigo del producto: ")
-    if not validar_codigo(productos,codigo):
-        print("Error: Este codigo ya existe")
-        return
+def agregar_producto_exe(productos, inventario):
+    while True:
+        codigo = input("Ingresa el código del producto: ")
+        if not validar_codigo(codigo):
+            print("Error: El código no puede estar vacío.")
+            continue
+        codigo = codigo.upper().strip()
+        if buscar_codigo(codigo, productos):
+            print("Error: Este código ya existe.")
+            continue
+        break 
 
-    nombre = validar_nombre("Ingresa el nombre del producto: ")
-    categoria = validar_categoria("Ingresa categoria: ")
-    precio = validar_precio("Ingresa el precio del producto: ")
-    disponible = validar_disponible("Ingrersa disponibilidad: ")
-    stock = validar_stock("Ingresa stock: ")
-    vendidos = 0
-    agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,productos,inventario)
+    while True:
+        nombre = input("Ingresa el nombre del producto: ")
+        if validar_nombre(nombre):
+            nombre = nombre.strip()
+            break
+        print("Error: El nombre no puede estar vacío.")
 
-def agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,productos,inventario):
-    if not validar_codigo(productos,codigo):
+    while True:
+        categoria = input("Ingresa la categoría: ")
+        if validar_categoria(categoria):
+            categoria = categoria.strip()
+            break
+        print("Error: La categoría no puede estar vacía.")
+
+    while True:
+        try:
+            precio = int(input("Ingresa el precio del producto: "))
+            if validar_precio(precio):
+                break
+            print("Error: El precio debe ser mayor que cero.")
+        except ValueError:
+            print("Error: Debes ingresar un número entero válido.")
+
+    while True:
+        disp_input = input("¿Está disponible? (s/n): ").lower().strip()
+        if disp_input == "s":
+            disponible = True
+            break
+        elif disp_input == "n":
+            disponible = False
+            break
+        else:
+            print("Error. Ingresa una respuesta valida")
+
+    while True:
+        try:
+            stock = int(input("Ingresa el stock: "))
+            if validar_stock(stock):
+                break
+            print("Error: El stock debe ser mayor o igual a cero.")
+        except ValueError:
+            print("Error: Debes ingresar un entero válido.")
+
+    while True:
+        try:
+            vendidos = int(input("Ingresa la cantidad de vendidos: "))
+            if validar_vendidos(vendidos):
+                break
+            print("Error: La cantidad debe ser mayor o igual a cero.")
+        except ValueError:
+            print("Error:Ingresa un número entero.")
+
+    if agregar_producto(codigo, nombre, categoria, precio, disponible, stock, vendidos, productos, inventario):
+        print(f"Producto {codigo} agregado exitosamente.")
+    else:
+        print("Hubo un error al guardar el producto.")
+
+def agregar_producto(codigo, nombre, categoria, precio, disponible, stock, vendidos, productos, inventario):
+    if buscar_codigo(codigo, productos):
         return False
-    productos[codigo] = [nombre,categoria,precio,disponible]
-    inventario[codigo] = [stock,vendidos]
+    productos[codigo] = [nombre, categoria, precio, disponible]
+    inventario[codigo] = [stock, vendidos]
     return True
 
-def eliminar_producto(codigo, productos,inventario):
+def eliminar_producto(codigo, productos, inventario):
     codigo = codigo.upper().strip()
-    if buscar_codigo(productos,codigo):
+    if buscar_codigo(codigo, productos):
         del productos[codigo]
         del inventario[codigo]
         return True
-    
     return False
 
 
 def mostrar_productos(productos, inventario):
-    print("\n=== LISTADO DE PRODUCTOS ===")
     
     if not productos:
         print("No hay productos registrados en el sistema.")
@@ -147,28 +231,59 @@ def mostrar_productos(productos, inventario):
         
         print(f"\nCODIGO: {codigo}")
         print(f"Nombre: {nombre}")
-        print(f"Categoría: {categoria}")
-        print(f"Precio: ${precio}")
+        print(f"Categoria: {categoria}")
+        print(f"Precio: {precio}")
         print(f"Disponible: {disponible}")
         print(f"Stock: {stock}")
         print(f"Vendidos: {vendidos}")
     print("============================")
 
 def main():
-    productos = {
-"P101":["Cuaderno","Papelería",2490,True],
-"P102":["Lápiz","Papelería",590,True],
-"P103":["Botella","Accesorios",6990,False],
-"P104":["Mochila","Accesorios",24990,True]}
-    inventario = {
-    "P101":[30,15],
-    "P102":[120,50],
-    "P103":[0,10],
-    "P104":[8,25]
-    }
+    productos = {}
+    inventario = {}
 
-    mostrar_menu()
-    opcion = leer_opcion()
-    leer_opcion()
-    if opcion == 1:
-        pass
+    while True:
+        mostrar_menu()
+        opcion = leer_opcion()
+
+        if opcion == 1:
+            categoria = input("\nIngresa la categoría a buscar: ")
+            stock_categoria(categoria, productos, inventario)
+            
+        elif opcion == 2:
+            ejecutar_buscar_precio(productos, inventario)
+            
+        elif opcion == 3:
+            while True:
+                codigo = input("\nIngresa el código del producto a actualizar: ")
+                try:
+                    nuevo_precio = int(input("Ingresa el nuevo precio: "))
+                    if actualizar_precio(codigo, nuevo_precio, productos):
+                        print("Precio actualizado correctamente.")
+                    else:
+                        print("Código inexistente.")
+                except ValueError:
+                    print("Error: El precio debe ser un número entero.")
+                
+                continuar = input("¿Deseas actualizar otro precio? (s/n): ").strip().lower()
+                if continuar != 's':
+                    break
+                    
+        elif opcion == 4:
+            agregar_producto_exe(productos, inventario)
+            
+        elif opcion == 5:
+            codigo = input("Ingresa el código del producto a eliminar: ")
+            if eliminar_producto(codigo, productos, inventario):
+                print("Producto eliminado exitosamente.")
+            else:
+                print("No se pudo eliminar.")
+                
+        elif opcion == 6:
+            mostrar_productos(productos, inventario)
+            
+        elif opcion == 7:
+            print(" Saliendo del programa")
+            break
+
+main()
