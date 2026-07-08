@@ -97,7 +97,28 @@ def actualizar_precio(codigo,nuevo_precio,productos):
         return True
     return False
 
+def eliminar_producto(codigo, productos,inventario):
+    codigo = codigo.upper().strip()
+    if buscar_codigo(productos,codigo):
+        del productos[codigo]
+        del inventario[codigo]
+        return True
+    return False
 
+
+def agregar_producto_exe(codigo, nombre, categoria, precio, disponible, stock, vendidos, productos,inventario):
+    codigo = validar_codigo("Ingresa el codigo del producto: ")
+    if not validar_codigo(productos,codigo):
+        print("Error: Este codigo ya existe")
+        return
+
+    nombre = validar_nombre("Ingresa el nombre del producto: ")
+    categoria = validar_categoria("Ingresa categoria: ")
+    precio = validar_precio("Ingresa el precio del producto: ")
+    disponible = validar_disponible("Ingrersa disponibilidad: ")
+    stock = validar_stock("Ingresa stock: ")
+    vendidos = 0
+    agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,productos,inventario)
 
 def main():
     productos = {
