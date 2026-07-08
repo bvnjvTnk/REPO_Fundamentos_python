@@ -24,7 +24,7 @@ def leer_opcion():
     while True:
         try:
             opcion = int(input("Selecciona opcion."))
-            if opcion >=1 and opcion <=6:
+            if opcion >=1 and opcion <=7:
                 return opcion
             else:
                 print("Ingresa un numero dentro del rango")
@@ -53,8 +53,7 @@ def validar_disponible(disponible):
     elif disponible == "n":
         return False
     else:
-        print("Dato no valido")
-        return
+        return False
     
 def validar_stock(stock):
     return stock >=0
@@ -63,13 +62,13 @@ def validar_stock(stock):
 def validar_vendidos(vendidos):
     return vendidos >=0
 
-def stock_categoria(categoria,productos,inventario):
-    categoria = categoria.strip().upper()
-    total_encontrados=0
-    for categoria, atributos in productos.items():
-        if atributos[1].upper().strip() == categoria:
-            total_encontrados = total_encontrados + 1
-    return total_encontrados
+def stock_categoria(categoria_buscada, productos, inventario):
+    categoria_buscada = categoria_buscada.strip().upper()
+    stock_total = 0
+    for codigo, atributos in productos.items():
+        if atributos[1].upper().strip() == categoria_buscada:
+            stock_total += inventario[codigo][0] 
+    print(f"Stock total para la categoría '{categoria_buscada}': {stock_total}")
 
 
 def buscar_precio(precio_min, precio_max, productos, inventario):
@@ -82,9 +81,9 @@ def buscar_precio(precio_min, precio_max, productos, inventario):
             items.append(item)
     return items
 
-def buscar_codigo(codigo, inventario, productos):
+def buscar_codigo(codigo, productos):
     codigo = codigo.upper().strip()
-    if codigo in productos and codigo in inventario:
+    if codigo in productos:
         return True
     
     return False
@@ -92,18 +91,11 @@ def buscar_codigo(codigo, inventario, productos):
 
 def actualizar_precio(codigo,nuevo_precio,productos):
     codigo = codigo.upper().strip()
-    if buscar_codigo(productos,codigo):
+    if buscar_codigo(codigo,productos):
         productos[codigo][2] = nuevo_precio
         return True
     return False
 
-def eliminar_producto(codigo, productos,inventario):
-    codigo = codigo.upper().strip()
-    if buscar_codigo(productos,codigo):
-        del productos[codigo]
-        del inventario[codigo]
-        return True
-    return False
 
 
 def agregar_producto_exe(codigo, nombre, categoria, precio, disponible, stock, vendidos, productos,inventario):
@@ -127,12 +119,40 @@ def agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,pr
     inventario[codigo] = [stock,vendidos]
     return True
 
+def eliminar_producto(codigo, productos,inventario):
+    codigo = codigo.upper().strip()
+    if buscar_codigo(productos,codigo):
+        del productos[codigo]
+        del inventario[codigo]
+        return True
+    
+    return False
 
-def eliminar_producto(codigo, productos, inventario):
-    pass
 
 def mostrar_productos(productos, inventario):
-    pass
+    print("\n=== LISTADO DE PRODUCTOS ===")
+    
+    if not productos:
+        print("No hay productos registrados en el sistema.")
+        return
+
+    for codigo in productos:
+        nombre = productos[codigo][0]
+        categoria = productos[codigo][1]
+        precio = productos[codigo][2]
+        disponible = productos[codigo][3]
+        
+        stock = inventario[codigo][0]
+        vendidos = inventario[codigo][1]
+        
+        print(f"\nCODIGO: {codigo}")
+        print(f"Nombre: {nombre}")
+        print(f"Categoría: {categoria}")
+        print(f"Precio: ${precio}")
+        print(f"Disponible: {disponible}")
+        print(f"Stock: {stock}")
+        print(f"Vendidos: {vendidos}")
+    print("============================")
 
 def main():
     productos = {
@@ -148,5 +168,7 @@ def main():
     }
 
     mostrar_menu()
+    opcion = leer_opcion()
     leer_opcion()
-
+    if opcion == 1:
+        pass
