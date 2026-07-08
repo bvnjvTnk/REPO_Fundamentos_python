@@ -63,6 +63,25 @@ def validar_stock(stock):
 def validar_vendidos(vendidos):
     return vendidos >=0
 
+def stock_categoria(categoria,productos,inventario):
+    categoria = categoria.strip().upper()
+    total_encontrados=0
+    for categoria, atributos in productos.items():
+        if atributos[1].upper().strip() == categoria:
+            total_encontrados = total_encontrados + 1
+    return total_encontrados
+
+
+def buscar_precio(precio_min, precio_max, productos, inventario):
+    items = []
+    if precio_max < precio_min:
+        return False
+    for codigo in productos:
+        if (precio_min <= productos[codigo][2] <= precio_max) and inventario[codigo][0] > 0:
+            item = [productos[codigo][1],productos[codigo][2]]
+            items.append(item)
+    return items
+
 
 
 
