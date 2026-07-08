@@ -54,7 +54,7 @@ def validar_disponible(disponible):
         return False
     else:
         print("Dato no valido")
-        return disponible
+        return
     
 def validar_stock(stock):
     return stock >=0
@@ -119,6 +119,20 @@ def agregar_producto_exe(codigo, nombre, categoria, precio, disponible, stock, v
     stock = validar_stock("Ingresa stock: ")
     vendidos = 0
     agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,productos,inventario)
+
+def agregar_producto(codigo,nombre,categoria,precio,disponible,stock,vendidos,productos,inventario):
+    if not validar_codigo(productos,codigo):
+        return False
+    productos[codigo] = [nombre,categoria,precio,disponible]
+    inventario[codigo] = [stock,vendidos]
+    return True
+
+
+def eliminar_producto(codigo, productos, inventario):
+    pass
+
+def mostrar_productos(productos, inventario):
+    pass
 
 def main():
     productos = {
